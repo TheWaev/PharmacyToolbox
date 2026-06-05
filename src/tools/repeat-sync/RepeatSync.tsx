@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import {
   calculateSync,
@@ -10,6 +10,22 @@ import {
 } from './syncEngine';
 import { buildSummaryText } from './summary';
 import { medicationNames, packSizesFor } from './dmdData';
+import {
+  CalculatorIcon,
+  SettingsIcon,
+  PillIcon,
+  ClipboardIcon,
+  CalendarIcon,
+  CopyIcon,
+  PrinterIcon,
+  PlusIcon,
+  TrashIcon,
+  ChevronLeftIcon,
+  InfoIcon,
+  CheckIcon,
+  AlertIcon,
+  ArrowRightIcon,
+} from '../../components/icons';
 
 const DEFAULT_CYCLE = 28;
 
@@ -33,7 +49,6 @@ function newRow(cycleLength = DEFAULT_CYCLE): MedicationInput {
   };
 }
 
-/** Parse a number input value into number | null (blank -> null). */
 function toNum(value: string): number | null {
   if (value.trim() === '') return null;
   const n = Number(value);
@@ -44,7 +59,6 @@ function numStr(value: number | null | undefined): string {
   return value == null ? '' : String(value);
 }
 
-/** True once the user has put anything meaningful in a row. */
 function rowHasInput(m: MedicationInput): boolean {
   return (
     m.name.trim() !== '' ||
@@ -64,6 +78,21 @@ const MODE_OPTIONS: { value: SyncMode; label: string }[] = [
   { value: 'targetDate', label: 'Sync to a specific date' },
 ];
 
+const card = 'rounded-2xl border border-slate-200 bg-white p-5 shadow-sm';
+const sectionTitle =
+  'flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500';
+const fieldLabel = 'text-sm font-medium text-slate-700';
+
+function inputCls(error = false): string {
+  return [
+    'mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 shadow-sm transition',
+    'placeholder:text-slate-400 focus:outline-none focus:ring-2',
+    error
+      ? 'border border-red-300 bg-red-50/40 focus:border-red-400 focus:ring-red-500/20'
+      : 'border border-slate-300 bg-white focus:border-teal-500 focus:ring-teal-500/25',
+  ].join(' ');
+}
+
 export default function RepeatSync() {
   const [meds, setMeds] = useState<MedicationInput[]>(() => [newRow(), newRow()]);
   const [mode, setMode] = useState<SyncMode>('catchUp');
@@ -82,7 +111,6 @@ export default function RepeatSync() {
     [mode, defaultCycleLength, targetDate, roundToPacks],
   );
 
-  // Recalculated live on every input change (PRD §8 performance).
   const result = useMemo(() => calculateSync(meds, settings, new Date()), [meds, settings]);
   const resultById = useMemo(
     () => Object.fromEntries(result.meds.map((m) => [m.id, m])),
@@ -110,86 +138,98 @@ export default function RepeatSync() {
     }
   }
 
-  // Only rows the user has started filling appear in the results.
-  const populatedMeds = meds.filter(rowHasInput);
-  const populatedResults = populatedMeds
+  const populatedResults = meds
+    .filter(rowHasInput)
     .map((m) => resultById[m.id])
     .filter((r): r is MedResult => Boolean(r));
 
   return (
     <div>
-      {/* Shared medication-name suggestions, sourced from the bundled dm+d subset. */}
       <datalist id="dmd-medications">
         {datalistNames.map((name) => (
           <option key={name} value={name} />
         ))}
       </datalist>
 
-      <header className="no-print mb-4">
-        <Link to="/" className="text-sm font-medium text-blue-700 hover:underline">
-          &larr; All tools
+      <div className="no-print mb-5">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1 text-sm font-medium text-teal-700 hover:text-teal-900"
+        >
+          <ChevronLeftIcon className="h-4 w-4" />
+          All tools
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">
-          Repeat Medication Synchronisation
-        </h1>
-        <p className="mt-1 max-w-2xl text-sm text-slate-600">
-          Enter each repeat item to calculate a one-off <strong>bridging quantity</strong> that
-          brings everything onto a common run-out date, plus the steady-state quantity to prescribe
-          each cycle thereafter.
-        </p>
-        <p className="mt-2 rounded border border-slate-200 bg-slate-100 px-3 py-2 text-xs text-slate-600">
-          Reminder: use medication names only — do not enter patient names, NHS numbers or other
-          identifiers.
-        </p>
-      </header>
-
-      <SettingsPanel
-        mode={mode}
-        setMode={setMode}
-        defaultCycleLength={defaultCycleLength}
-        setDefaultCycleLength={setDefaultCycleLength}
-        targetDate={targetDate}
-        setTargetDate={setTargetDate}
-        roundToPacks={roundToPacks}
-        setRoundToPacks={setRoundToPacks}
-      />
-
-      <section className="no-print mb-6" aria-labelledby="meds-heading">
-        <h2
-          id="meds-heading"
-          className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500"
-        >
-          Medications
-        </h2>
-        <div className="space-y-3">
-          {meds.map((m, i) => (
-            <MedicationRow
-              key={m.id}
-              index={i}
-              med={m}
-              result={resultById[m.id]}
-              onChange={(patch) => updateMed(m.id, patch)}
-              onRemove={meds.length > 1 ? () => removeRow(m.id) : undefined}
-            />
-          ))}
+        <div className="mt-3 flex items-start gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-700 ring-1 ring-inset ring-teal-100">
+            <CalculatorIcon className="h-6 w-6" weight="duotone" />
+          </span>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+              Repeat Medication Synchronisation
+            </h1>
+            <p className="mt-1 max-w-2xl text-sm text-slate-600">
+              Enter each repeat item to calculate a one-off <strong>bridging quantity</strong> that
+              brings everything onto a common run-out date, plus the steady-state quantity to
+              prescribe each cycle.
+            </p>
+          </div>
         </div>
+        <p className="mt-3 inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-xs text-slate-600">
+          <InfoIcon className="h-4 w-4 shrink-0 text-slate-400" weight="fill" />
+          Use medication names only — do not enter patient names, NHS numbers or other identifiers.
+        </p>
+      </div>
 
-        <button
-          type="button"
-          onClick={addRow}
-          className="mt-3 rounded border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-        >
-          + Add medication
-        </button>
-      </section>
+      <div className="space-y-5">
+        <SettingsPanel
+          mode={mode}
+          setMode={setMode}
+          defaultCycleLength={defaultCycleLength}
+          setDefaultCycleLength={setDefaultCycleLength}
+          targetDate={targetDate}
+          setTargetDate={setTargetDate}
+          roundToPacks={roundToPacks}
+          setRoundToPacks={setRoundToPacks}
+        />
 
-      <ResultsPanel
-        result={result}
-        settings={settings}
-        rows={populatedResults}
-        onCopy={copySummary}
-        copied={copied}
-      />
+        <section className="no-print" aria-labelledby="meds-heading">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 id="meds-heading" className={sectionTitle}>
+              <PillIcon className="h-4 w-4 text-teal-600" weight="fill" />
+              Medications
+            </h2>
+            <span className="text-xs text-slate-400">{meds.length} rows</span>
+          </div>
+          <div className="space-y-3">
+            {meds.map((m, i) => (
+              <MedicationRow
+                key={m.id}
+                index={i}
+                med={m}
+                result={resultById[m.id]}
+                onChange={(patch) => updateMed(m.id, patch)}
+                onRemove={meds.length > 1 ? () => removeRow(m.id) : undefined}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={addRow}
+            className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-slate-300 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:border-teal-300 hover:bg-teal-50/40 hover:text-teal-700"
+          >
+            <PlusIcon className="h-4 w-4" />
+            Add medication
+          </button>
+        </section>
+
+        <ResultsPanel
+          result={result}
+          settings={settings}
+          rows={populatedResults}
+          onCopy={copySummary}
+          copied={copied}
+        />
+      </div>
     </div>
   );
 }
@@ -214,68 +254,77 @@ function SettingsPanel({
   setRoundToPacks: (b: boolean) => void;
 }) {
   return (
-    <section
-      className="no-print mb-6 rounded-lg border border-slate-200 bg-white p-4"
-      aria-labelledby="settings-heading"
-    >
-      <h2
-        id="settings-heading"
-        className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500"
-      >
+    <section className={`no-print ${card}`} aria-labelledby="settings-heading">
+      <h2 id="settings-heading" className={`mb-4 ${sectionTitle}`}>
+        <SettingsIcon className="h-4 w-4 text-teal-600" weight="bold" />
         Synchronisation settings
       </h2>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block text-sm">
-          <span className="font-medium text-slate-700">Default cycle length (days)</span>
+
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label htmlFor="default-cycle" className={fieldLabel}>
+            Default cycle length (days)
+          </label>
           <input
+            id="default-cycle"
             type="number"
             min={1}
             step={1}
             value={defaultCycleLength}
             onChange={(e) => setDefaultCycleLength(toNum(e.target.value) ?? DEFAULT_CYCLE)}
-            className="mt-1 block w-32 rounded border border-slate-300 px-2 py-1"
+            className={`${inputCls()} w-32`}
           />
-        </label>
+        </div>
 
-        <fieldset className="text-sm">
-          <legend className="font-medium text-slate-700">Synchronisation mode</legend>
-          <div className="mt-1 space-y-1">
-            {MODE_OPTIONS.map((opt) => (
-              <label key={opt.value} className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="sync-mode"
-                  value={opt.value}
-                  checked={mode === opt.value}
-                  onChange={() => setMode(opt.value)}
-                />
-                <span>{opt.label}</span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
+        <div className="sm:col-span-2">
+          <fieldset>
+            <legend className={`mb-2 ${fieldLabel}`}>Synchronisation mode</legend>
+            <div className="flex flex-wrap gap-2">
+              {MODE_OPTIONS.map((opt) => (
+                <label key={opt.value} className="cursor-pointer">
+                  <input
+                    type="radio"
+                    name="sync-mode"
+                    value={opt.value}
+                    checked={mode === opt.value}
+                    onChange={() => setMode(opt.value)}
+                    className="peer sr-only"
+                  />
+                  <span className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-600 transition hover:border-slate-300 peer-checked:border-teal-500 peer-checked:bg-teal-50 peer-checked:font-medium peer-checked:text-teal-700 peer-checked:ring-1 peer-checked:ring-teal-500 peer-focus-visible:ring-2 peer-focus-visible:ring-teal-500/40">
+                    {opt.label}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        </div>
 
         {mode === 'targetDate' && (
-          <label className="block text-sm">
-            <span className="font-medium text-slate-700">Target date</span>
-            <input
-              type="date"
-              value={targetDate}
-              onChange={(e) => setTargetDate(e.target.value)}
-              className="mt-1 block rounded border border-slate-300 px-2 py-1"
-            />
-          </label>
+          <div>
+            <label htmlFor="target-date" className={fieldLabel}>
+              Target date
+            </label>
+            <div className="relative">
+              <CalendarIcon className="pointer-events-none absolute left-3 top-1/2 mt-0.5 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <input
+                id="target-date"
+                type="date"
+                value={targetDate}
+                onChange={(e) => setTargetDate(e.target.value)}
+                className={`${inputCls()} pl-9`}
+              />
+            </div>
+          </div>
         )}
 
-        <label className="flex items-center gap-2 self-end text-sm">
+        <label className="flex items-center gap-2.5 self-end text-sm">
           <input
             type="checkbox"
             checked={roundToPacks}
             onChange={(e) => setRoundToPacks(e.target.checked)}
+            className="h-4 w-4 rounded border-slate-300 accent-teal-600 focus:ring-teal-500/30"
           />
-          <span className="text-slate-700">
-            Round up to whole packs (where a pack size is set)
-          </span>
+          <span className="text-slate-700">Round up to whole packs (where a pack size is set)</span>
         </label>
       </div>
     </section>
@@ -305,7 +354,27 @@ function MedicationRow({
   const cycleErrId = `${med.id}-cycle-err`;
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-3">
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-slate-300">
+      <div className="mb-3 flex items-center gap-2">
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-500">
+          {index + 1}
+        </span>
+        <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
+          Medication
+        </span>
+        {onRemove && (
+          <button
+            type="button"
+            onClick={onRemove}
+            aria-label={`Remove row ${index + 1}`}
+            className="ml-auto inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+          >
+            <TrashIcon className="h-4 w-4" />
+            Remove
+          </button>
+        )}
+      </div>
+
       <div className="grid items-start gap-3 sm:grid-cols-12">
         <Field className="sm:col-span-4" label="Medication">
           <input
@@ -317,13 +386,11 @@ function MedicationRow({
             onChange={(e) => {
               const name = e.target.value;
               const patch: Partial<MedicationInput> = { name };
-              // Helpfully prefill pack size when the picked dm+d item has a
-              // single known pack and the user hasn't set one.
               const packs = packSizesFor(name);
               if (med.packSize == null && packs.length === 1) patch.packSize = packs[0];
               onChange(patch);
             }}
-            className="mt-1 block w-full rounded border border-slate-300 px-2 py-1"
+            className={inputCls()}
           />
         </Field>
 
@@ -390,48 +457,42 @@ function MedicationRow({
             value={numStr(med.packSize)}
             aria-label={`Pack size, row ${index + 1}`}
             onChange={(e) => onChange({ packSize: toNum(e.target.value) })}
-            className={inputCls(false)}
+            className={inputCls()}
           />
         </Field>
       </div>
 
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
         <label className="flex items-center gap-2 text-sm text-slate-600">
           <input
             type="checkbox"
             checked={med.excludeFromSync ?? false}
             onChange={(e) => onChange({ excludeFromSync: e.target.checked })}
+            className="h-4 w-4 rounded border-slate-300 accent-teal-600 focus:ring-teal-500/30"
           />
           <span>Variable / PRN — list but don’t calculate</span>
         </label>
-        {onRemove && (
-          <button
-            type="button"
-            onClick={onRemove}
-            aria-label={`Remove row ${index + 1}`}
-            className="rounded px-2 py-1 text-sm text-red-700 hover:bg-red-50"
-          >
-            Remove
-          </button>
-        )}
       </div>
 
       {active && result && (
-        <p className="mt-2 text-sm text-slate-600">
+        <div className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-sm">
           {result.included && result.bridgingQty != null ? (
-            <>
+            <span className="text-slate-600">
               Bridge now:{' '}
-              <span className="font-semibold text-slate-900">{result.bridgingQty}</span> · ongoing
-              per cycle: {result.ongoingQty} · current supply ~
-              {Math.floor(result.daysRemaining ?? 0)} days
+              <span className="font-semibold text-teal-700">{result.bridgingQty}</span> · ongoing per
+              cycle: {result.ongoingQty} · current supply ~{Math.floor(result.daysRemaining ?? 0)}{' '}
+              days
               {result.flags.includes('alreadySupplied') && (
                 <span className="text-amber-700"> · already supplied beyond sync date</span>
               )}
-            </>
+            </span>
           ) : (
-            <span className="text-amber-700">{describeExclusion(result)}</span>
+            <span className="inline-flex items-center gap-1.5 text-amber-700">
+              <AlertIcon className="h-4 w-4" weight="fill" />
+              {describeExclusion(result)}
+            </span>
           )}
-        </p>
+        </div>
       )}
     </div>
   );
@@ -452,14 +513,13 @@ function ResultsPanel({
 }) {
   const summaryText = buildSummaryText(result, settings);
   const hasRows = rows.length > 0;
+  const showStats = result.canCalculate && result.horizonDays != null && result.syncRunOutDate;
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-4" aria-labelledby="results-heading">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <h2
-          id="results-heading"
-          className="text-sm font-semibold uppercase tracking-wide text-slate-500"
-        >
+    <section className={card} aria-labelledby="results-heading">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <h2 id="results-heading" className={sectionTitle}>
+          <ClipboardIcon className="h-4 w-4 text-teal-600" weight="fill" />
           Results
         </h2>
         <div className="no-print flex gap-2">
@@ -467,36 +527,44 @@ function ResultsPanel({
             type="button"
             onClick={onCopy}
             disabled={!result.canCalculate}
-            className="rounded bg-blue-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {copied ? 'Copied ✓' : 'Copy summary'}
+            {copied ? <CheckIcon className="h-4 w-4" weight="bold" /> : <CopyIcon className="h-4 w-4" />}
+            {copied ? 'Copied' : 'Copy summary'}
           </button>
           <button
             type="button"
             onClick={() => window.print()}
-            className="rounded border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
           >
+            <PrinterIcon className="h-4 w-4" />
             Print
           </button>
         </div>
       </div>
 
-      {/* Announce key results to screen readers when they change. */}
       <div aria-live="polite">
         {result.errors.length > 0 && (
-          <ul className="mb-3 list-disc rounded border border-amber-300 bg-amber-50 py-2 pl-8 pr-3 text-sm text-amber-900">
-            {result.errors.map((e) => (
-              <li key={e}>{e}</li>
-            ))}
-          </ul>
+          <div className="mb-4 flex gap-2.5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+            <AlertIcon className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" weight="fill" />
+            <ul className="space-y-1">
+              {result.errors.map((e) => (
+                <li key={e}>{e}</li>
+              ))}
+            </ul>
+          </div>
         )}
 
-        {result.canCalculate && result.horizonDays != null && result.syncRunOutDate && (
-          <dl className="mb-4 grid grid-cols-2 gap-3 rounded-md bg-blue-50 p-3 text-sm sm:grid-cols-4">
-            <SummaryStat label="Mode" value={MODE_OPTIONS.find((o) => o.value === settings.mode)?.label ?? settings.mode} />
-            <SummaryStat label="Cycle length" value={`${settings.defaultCycleLength} days`} />
-            <SummaryStat label="Sync horizon" value={`${result.horizonDays} days`} />
-            <SummaryStat label="Common run-out / next order" value={formatDate(result.syncRunOutDate)} />
+        {showStats && result.horizonDays != null && result.syncRunOutDate && (
+          <dl className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <Stat label="Mode" value={MODE_OPTIONS.find((o) => o.value === settings.mode)?.label ?? settings.mode} />
+            <Stat label="Cycle length" value={`${settings.defaultCycleLength} days`} />
+            <Stat label="Sync horizon" value={`${result.horizonDays} days`} highlight />
+            <Stat
+              label="Common run-out / next order"
+              value={formatDate(result.syncRunOutDate)}
+              icon={<CalendarIcon className="h-4 w-4 text-teal-600" />}
+            />
           </dl>
         )}
       </div>
@@ -504,15 +572,13 @@ function ResultsPanel({
       {hasRows ? (
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-sm">
-            <caption className="sr-only">
-              Bridging and ongoing quantities per medication
-            </caption>
+            <caption className="sr-only">Bridging and ongoing quantities per medication</caption>
             <thead>
-              <tr className="border-b border-slate-200 text-left text-slate-500">
+              <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-400">
                 <th scope="col" className="py-2 pr-3 font-medium">Medication</th>
-                <th scope="col" className="py-2 pr-3 font-medium">Current supply</th>
+                <th scope="col" className="py-2 pr-3 font-medium">Supply</th>
                 <th scope="col" className="py-2 pr-3 font-medium">Bridge now</th>
-                <th scope="col" className="py-2 pr-3 font-medium">Ongoing / cycle</th>
+                <th scope="col" className="py-2 pr-3 font-medium">Ongoing</th>
                 <th scope="col" className="py-2 font-medium">Status</th>
               </tr>
             </thead>
@@ -524,18 +590,18 @@ function ResultsPanel({
           </table>
         </div>
       ) : (
-        <p className="text-sm text-slate-500">
+        <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 px-4 py-8 text-center text-sm text-slate-500">
           Add at least one medication with a quantity and a daily dose to see results.
         </p>
       )}
 
-      {/* Plain-text summary for copy/paste and print. */}
       {hasRows && (
         <details className="mt-4">
-          <summary className="cursor-pointer text-sm font-medium text-slate-600">
+          <summary className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900">
+            <ArrowRightIcon className="h-3.5 w-3.5" />
             Plain-text summary (copyable)
           </summary>
-          <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded bg-slate-50 p-3 text-sm text-slate-800">
+          <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded-xl bg-slate-50 p-3 text-sm text-slate-700">
             {summaryText}
           </pre>
         </details>
@@ -547,35 +613,40 @@ function ResultsPanel({
 function ResultRow({ r }: { r: MedResult }) {
   const calculated = r.included && r.bridgingQty != null;
   return (
-    <tr className={['border-b border-slate-100', calculated ? '' : 'bg-amber-50/60'].join(' ')}>
-      <th scope="row" className="py-2 pr-3 text-left font-medium text-slate-900">
+    <tr className={['border-b border-slate-100', calculated ? '' : 'bg-amber-50/40'].join(' ')}>
+      <th scope="row" className="py-3 pr-3 text-left font-medium text-slate-900">
         {r.name || <span className="italic text-slate-400">(unnamed)</span>}
       </th>
-      <td className="py-2 pr-3 text-slate-600">
+      <td className="py-3 pr-3 text-slate-500">
         {r.daysRemaining != null ? `~${Math.floor(r.daysRemaining)} days` : '—'}
       </td>
-      <td className="py-2 pr-3">
+      <td className="py-3 pr-3">
         {calculated ? (
           // Bridging quantity is the visually dominant figure per PRD §9.
-          <span className="text-2xl font-extrabold tabular-nums text-slate-900">
-            {r.bridgingQty}
-          </span>
+          <span className="text-2xl font-extrabold tabular-nums text-teal-700">{r.bridgingQty}</span>
         ) : (
-          <span className="text-slate-400">—</span>
+          <span className="text-slate-300">—</span>
         )}
       </td>
-      <td className="py-2 pr-3 tabular-nums text-slate-600">
-        {calculated ? r.ongoingQty : '—'}
-      </td>
-      <td className="py-2 text-slate-600">
+      <td className="py-3 pr-3 tabular-nums text-slate-600">{calculated ? r.ongoingQty : '—'}</td>
+      <td className="py-3">
         {calculated ? (
           r.flags.includes('alreadySupplied') ? (
-            <span className="text-amber-700">Already supplied beyond sync date</span>
+            <span className="inline-flex items-center gap-1 text-amber-700">
+              <AlertIcon className="h-4 w-4" weight="fill" />
+              Already supplied
+            </span>
           ) : (
-            <span className="text-green-700">OK</span>
+            <span className="inline-flex items-center gap-1 text-teal-700">
+              <CheckIcon className="h-4 w-4" weight="fill" />
+              OK
+            </span>
           )
         ) : (
-          <span className="text-amber-700">{describeExclusion(r)}</span>
+          <span className="inline-flex items-center gap-1 text-amber-700">
+            <AlertIcon className="h-4 w-4" weight="fill" />
+            {describeExclusion(r)}
+          </span>
         )}
       </td>
     </tr>
@@ -591,11 +662,36 @@ function describeExclusion(r: MedResult | undefined): string {
   return 'Not calculated';
 }
 
-function SummaryStat({ label, value }: { label: string; value: string }) {
+function Stat({
+  label,
+  value,
+  highlight,
+  icon,
+}: {
+  label: string;
+  value: string;
+  highlight?: boolean;
+  icon?: ReactNode;
+}) {
   return (
-    <div>
-      <dt className="text-xs uppercase tracking-wide text-slate-500">{label}</dt>
-      <dd className="mt-0.5 font-semibold text-slate-900">{value}</dd>
+    <div
+      className={[
+        'rounded-xl border p-3',
+        highlight ? 'border-teal-200 bg-teal-50' : 'border-slate-200 bg-slate-50/60',
+      ].join(' ')}
+    >
+      <dt className="flex items-center gap-1.5 text-xs uppercase tracking-wide text-slate-500">
+        {icon}
+        {label}
+      </dt>
+      <dd
+        className={[
+          'mt-1 font-semibold',
+          highlight ? 'text-lg text-teal-800' : 'text-slate-900',
+        ].join(' ')}
+      >
+        {value}
+      </dd>
     </div>
   );
 }
@@ -608,15 +704,13 @@ function Field({
 }: {
   label: string;
   className?: string;
-  // Rendered as a sibling of the label so it never becomes part of the input's
-  // accessible name.
-  error?: React.ReactNode;
-  children: React.ReactNode;
+  error?: ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div className={['text-sm', className].filter(Boolean).join(' ')}>
       <label className="block">
-        <span className="font-medium text-slate-700">{label}</span>
+        <span className="text-xs font-medium text-slate-500">{label}</span>
         {children}
       </label>
       {error}
@@ -624,17 +718,10 @@ function Field({
   );
 }
 
-function FieldError({ id, children }: { id: string; children: React.ReactNode }) {
+function FieldError({ id, children }: { id: string; children: ReactNode }) {
   return (
-    <span id={id} role="alert" className="mt-1 block text-xs text-red-700">
+    <span id={id} role="alert" className="mt-1 block text-xs text-red-600">
       {children}
     </span>
   );
-}
-
-function inputCls(error: boolean): string {
-  return [
-    'mt-1 block w-full rounded border px-2 py-1',
-    error ? 'border-red-400 bg-red-50' : 'border-slate-300',
-  ].join(' ');
 }

@@ -1,5 +1,7 @@
 import type { ComponentType } from 'react';
+import type { Icon } from '@phosphor-icons/react';
 import RepeatSync from './repeat-sync/RepeatSync';
+import { CalculatorIcon, HeartPulseIcon } from '../components/icons';
 
 /**
  * The single source of truth for the suite's tools.
@@ -15,6 +17,8 @@ export interface ToolDef {
   /** One-line description shown on the home page card. */
   summary: string;
   status: 'available' | 'planned';
+  /** Icon shown on the home page card. */
+  icon: Icon;
   /** Rendered at the tool's route. Omit for `planned` tools. */
   component?: ComponentType;
 }
@@ -26,6 +30,7 @@ export const tools: ToolDef[] = [
     summary:
       'Align a patient’s repeat medications onto a common run-out date and calculate the one-off bridging quantity per item.',
     status: 'available',
+    icon: CalculatorIcon,
     component: RepeatSync,
   },
   {
@@ -33,6 +38,7 @@ export const tools: ToolDef[] = [
     name: 'Creatinine Clearance (CrCl)',
     summary: 'Cockcroft–Gault creatinine clearance estimate. Planned — not yet available.',
     status: 'planned',
+    icon: HeartPulseIcon,
   },
 ];
 

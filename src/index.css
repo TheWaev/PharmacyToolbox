@@ -11,7 +11,10 @@
   }
   /* Visible focus styles for keyboard users (WCAG 2.1 AA). */
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-blue-600;
+    @apply outline-2 outline-offset-2 outline-teal-600;
+  }
+  ::selection {
+    @apply bg-teal-200/60;
   }
 }
 

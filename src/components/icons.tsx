@@ -1,0 +1,23 @@
+// Central icon module — semantic names mapped to Phosphor icons
+// (@phosphor-icons/react). Bundled at build time, so no icon/font CDN is used
+// (keeps the app offline / no-network per the IG rules). Swap a glyph here and
+// it updates everywhere. Size them with Tailwind h-*/w-* classes.
+export {
+  Pill as PillIcon,
+  Calculator as CalculatorIcon,
+  Heartbeat as HeartPulseIcon,
+  CalendarBlank as CalendarIcon,
+  Copy as CopyIcon,
+  Printer as PrinterIcon,
+  Plus as PlusIcon,
+  Trash as TrashIcon,
+  ArrowRight as ArrowRightIcon,
+  CaretLeft as ChevronLeftIcon,
+  ShieldCheck as ShieldIcon,
+  Warning as AlertIcon,
+  ClipboardText as ClipboardIcon,
+  Sparkle as SparklesIcon,
+  SlidersHorizontal as SettingsIcon,
+  Info as InfoIcon,
+  CheckCircle as CheckIcon,
+} from '@phosphor-icons/react';
