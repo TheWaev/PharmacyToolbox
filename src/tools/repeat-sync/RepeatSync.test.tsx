@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import RepeatSync from './RepeatSync';
@@ -78,13 +78,12 @@ describe('RepeatSync UI', () => {
     expect(values.length).toBeGreaterThan(0);
   });
 
-  it('prefills the pack size when a known dm+d medication is entered', async () => {
-    const user = userEvent.setup();
+  it('prefills the pack size when a known dm+d medication is entered', () => {
     renderTool();
-    await user.type(
-      screen.getByLabelText('Medication name, row 1'),
-      'Amlodipine 5mg tablets',
-    );
+    // A single change with the full value mirrors selecting a datalist option.
+    fireEvent.change(screen.getByLabelText('Medication name, row 1'), {
+      target: { value: 'Amlodipine 5mg tablets' },
+    });
     // Sample data records a single 28-unit pack for this product.
     expect(screen.getAllByLabelText('Pack size')[0]).toHaveValue(28);
   });
