@@ -69,6 +69,36 @@ which tests, builds and publishes to GitHub Pages at `/ClinicalPharmTools/`.
 The base path is configurable. If the suite later moves to a custom domain or another host
 served from the root, build with `BASE_PATH=/ npm run build` — no code change needed.
 
+## Authentication
+
+The whole app sits behind a login (email + password) using **Supabase Auth**. Sign-up is
+restricted to **@nhs.net** and **@abtrace.co** addresses. There is no backend to run — Supabase
+handles the user store, password hashing, email confirmation and sessions.
+
+> Note: this introduces runtime calls to Supabase and shares staff emails/passwords with it (a data
+> processor). No patient data is involved and the calculators still run entirely client-side. The
+> static files remain publicly fetchable from the CDN; the gate controls normal app access.
+
+**Setup (one-off):**
+
+1. Create a Supabase project — choose an **EU/London region** (staff-email residency).
+2. **Auth → Providers → Email:** enable it with **Confirm email** on.
+3. **Auth → URL Configuration:** set the Site URL + redirect URLs to your deployed URL.
+4. **SQL editor:** run [`supabase/allowed-domains.sql`](supabase/allowed-domains.sql) to enforce the
+   allowed domains server-side.
+5. **Project Settings → API:** copy the **Project URL** and **anon public key** into env vars:
+
+   ```bash
+   cp .env.example .env   # then fill in the two values for local dev
+   ```
+
+   Set the same `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` in your host's build environment
+   (e.g. Cloudflare Pages). Both are public by design.
+
+To work on the app locally without auth, set `VITE_AUTH_DEV_BYPASS=true` in `.env` (DEV only;
+ignored in production builds). Allowed domains live in
+[src/auth/allowedDomains.ts](src/auth/allowedDomains.ts) — keep them in sync with the SQL.
+
 ## Medication data (NHS dm+d)
 
 The medication-name autocomplete and pack-size hints are powered by the NHS **dm+d**

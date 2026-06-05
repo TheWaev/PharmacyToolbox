@@ -2,6 +2,11 @@ node_modules
 dist
 dist-ssr
 *.local
+
+# Local env (Supabase keys etc.) — never commit. See .env.example
+.env
+.env.*
+!.env.example
 .vite
 coverage
 

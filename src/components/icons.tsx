@@ -20,4 +20,10 @@ export {
   SlidersHorizontal as SettingsIcon,
   Info as InfoIcon,
   CheckCircle as CheckIcon,
+  EnvelopeSimple as EmailIcon,
+  Lock as LockIcon,
+  SignIn as SignInIcon,
+  UserPlus as SignUpIcon,
+  SignOut as SignOutIcon,
+  CircleNotch as SpinnerIcon,
 } from '@phosphor-icons/react';
