@@ -14,6 +14,7 @@ no analytics.
 | Repeat Medication Synchronisation | ✅ Available | Align repeat items onto a common run-out date; compute bridging + ongoing quantities. |
 | Creatinine Clearance (CrCl) | ✅ Available | Cockcroft–Gault estimate with actual / ideal / adjusted body weight; µmol/L or mg/dL. |
 | Weight Management Eligibility | ✅ Available | Tirzepatide (Mounjaro) eligibility against the South East London pathway; date-phased, borough-aware. |
+| Atrial Fibrillation Risk | ✅ Available | CHA₂DS₂-VASc (stroke) + HAS-BLED (bleeding) scores with NICE NG196 thresholds. |
 
 ## Tech stack
 

@@ -3,7 +3,8 @@ import type { Icon } from '@phosphor-icons/react';
 import RepeatSync from './repeat-sync/RepeatSync';
 import CrCl from './crcl/CrCl';
 import WeightMgmt from './weight-management/WeightMgmt';
-import { CalculatorIcon, HeartPulseIcon, ScalesIcon } from '../components/icons';
+import AfRisk from './af-risk/AfRisk';
+import { CalculatorIcon, HeartPulseIcon, ScalesIcon, PulseIcon } from '../components/icons';
 
 /**
  * The single source of truth for the suite's tools.
@@ -52,6 +53,15 @@ export const tools: ToolDef[] = [
     status: 'available',
     icon: ScalesIcon,
     component: WeightMgmt,
+  },
+  {
+    slug: 'af-risk',
+    name: 'Atrial Fibrillation Risk',
+    summary:
+      'CHA₂DS₂-VASc stroke risk and HAS-BLED bleeding risk to support anticoagulation decisions.',
+    status: 'available',
+    icon: PulseIcon,
+    component: AfRisk,
   },
 ];
 
