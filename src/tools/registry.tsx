@@ -4,7 +4,8 @@ import RepeatSync from './repeat-sync/RepeatSync';
 import CrCl from './crcl/CrCl';
 import WeightMgmt from './weight-management/WeightMgmt';
 import AfRisk from './af-risk/AfRisk';
-import { CalculatorIcon, HeartPulseIcon, ScalesIcon, PulseIcon } from '../components/icons';
+import AcbCalc from './acb/AcbCalc';
+import { CalculatorIcon, HeartPulseIcon, ScalesIcon, PulseIcon, BrainIcon } from '../components/icons';
 
 /**
  * The single source of truth for the suite's tools.
@@ -62,6 +63,15 @@ export const tools: ToolDef[] = [
     status: 'available',
     icon: PulseIcon,
     component: AfRisk,
+  },
+  {
+    slug: 'acb',
+    name: 'Anticholinergic Burden (ACB)',
+    summary:
+      'Total a patient’s anticholinergic cognitive burden from their medicines (ACB scale); flags a score ≥3.',
+    status: 'available',
+    icon: BrainIcon,
+    component: AcbCalc,
   },
 ];
 

@@ -33,4 +33,8 @@ export {
   XCircle as RevokeIcon,
   Scales as ScalesIcon,
   Pulse as PulseIcon,
+  Brain as BrainIcon,
+  MagnifyingGlass as SearchIcon,
+  X as XIcon,
+  ArrowsLeftRight as ConvertIcon,
 } from '@phosphor-icons/react';
