@@ -303,16 +303,6 @@ export default function Qrisk3() {
                     </div>
                   </div>
 
-                  {result.healthyScore != null && (
-                    <p className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600">
-                      A healthy person of the same age, sex and ethnicity would score{' '}
-                      <strong>{result.healthyScore}%</strong>
-                      {result.relativeRisk != null && result.relativeRisk > 1 && (
-                        <> — this patient’s risk is about <strong>{result.relativeRisk}×</strong> higher.</>
-                      )}
-                    </p>
-                  )}
-
                   <div className={`mt-3 rounded-lg px-3 py-2 text-sm ${result.statinThresholdMet ? 'bg-teal-50 text-teal-800' : 'bg-slate-50 text-slate-600'}`}>
                     {result.statinThresholdMet
                       ? 'QRISK3 ≥ 10% — discuss a statin (atorvastatin 20 mg) for primary prevention (NICE NG238).'

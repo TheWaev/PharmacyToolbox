@@ -140,13 +140,6 @@ describe('qrisk3 public wrapper', () => {
     expect(high.score!).toBeGreaterThan(low.score!);
   });
 
-  it('reports a healthy-reference comparison', () => {
-    const r = qrisk3({ ...baseInput, smoking: 4 });
-    expect(r.healthyScore).not.toBeNull();
-    expect(r.relativeRisk).not.toBeNull();
-    expect(r.relativeRisk!).toBeGreaterThan(1);
-  });
-
   it('ignores erectile dysfunction for females', () => {
     const f1 = qrisk3({ ...baseInput, sex: 'female', erectileDysfunction: false });
     const f2 = qrisk3({ ...baseInput, sex: 'female', erectileDysfunction: true });
@@ -180,7 +173,6 @@ describe('qrisk3 public wrapper', () => {
       treatedHypertension: true,
     });
     expect(r.score).toBe(17.8);
-    expect(r.healthyScore).toBe(3.6);
   });
 });
 

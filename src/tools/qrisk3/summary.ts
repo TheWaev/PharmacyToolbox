@@ -11,8 +11,6 @@ export function buildQrisk3Summary(input: Qrisk3Input, r: Qrisk3Result): string 
   lines.push('(Decision aid only. Calculated locally — no patient identifiers, no postcode.)');
   lines.push('');
   lines.push(`10-year CVD risk: ${r.score}%`);
-  if (r.healthyScore != null)
-    lines.push(`Healthy person (same age/sex/ethnicity): ${r.healthyScore}%${r.relativeRisk != null ? ` (≈${r.relativeRisk}× higher)` : ''}`);
   lines.push('');
   lines.push(`Sex: ${input.sex} · Age: ${input.age} · Ethnicity: ${label(ETHNICITIES, input.ethnicity)}`);
   lines.push(`Smoking: ${label(SMOKING, input.smoking)}`);

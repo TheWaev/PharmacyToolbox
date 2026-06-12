@@ -309,10 +309,6 @@ export interface Qrisk3Result {
   errors: string[];
   /** 10-year CVD risk (%), rounded to 1 dp. */
   score: number | null;
-  /** Risk of a healthy person of the same age/sex/ethnicity (%), for context. */
-  healthyScore: number | null;
-  /** score / healthyScore, rounded to 1 dp. */
-  relativeRisk: number | null;
   bmiUsed: number | null;
   /** NICE NG238: ≥10% → consider a statin (atorvastatin 20 mg). */
   statinThresholdMet: boolean | null;
@@ -370,40 +366,11 @@ export function qrisk3(input: Qrisk3Input): Qrisk3Result {
   if (!input.ethnicity) errors.push('Select an ethnicity.');
 
   if (errors.length > 0) {
-    return {
-      ok: false,
-      errors,
-      score: null,
-      healthyScore: null,
-      relativeRisk: null,
-      bmiUsed: null,
-      statinThresholdMet: null,
-    };
+    return { ok: false, errors, score: null, bmiUsed: null, statinThresholdMet: null };
   }
 
   const raw = buildRaw(input);
   const score = round1(rawScore(input.sex, raw));
 
-  // "Healthy person" reference, as defined by the official calculator: same
-  // age/sex/ethnicity, no clinical conditions, never-smoker, cholesterol ratio
-  // 4.0, a stable systolic BP of 125 (SD 0), BMI 25 and average deprivation.
-  const healthyRaw: RawInput = {
-    age: input.age as number,
-    b_AF: 0, b_atypicalantipsy: 0, b_corticosteroids: 0, b_impotence2: 0, b_migraine: 0,
-    b_ra: 0, b_renal: 0, b_semi: 0, b_sle: 0, b_treatedhyp: 0, b_type1: 0, b_type2: 0,
-    bmi: 25, ethrisk: input.ethnicity, fh_cvd: 0, rati: 4, sbp: 125, sbps5: 0,
-    smoke_cat: 0, town: 0,
-  };
-  const healthyScore = round1(rawScore(input.sex, healthyRaw));
-  const relativeRisk = healthyScore > 0 ? round1(score / healthyScore) : null;
-
-  return {
-    ok: true,
-    errors,
-    score,
-    healthyScore,
-    relativeRisk,
-    bmiUsed: raw.bmi,
-    statinThresholdMet: score >= 10,
-  };
+  return { ok: true, errors, score, bmiUsed: raw.bmi, statinThresholdMet: score >= 10 };
 }
