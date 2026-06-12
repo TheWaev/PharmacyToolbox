@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { PillIcon, SignOutIcon, UsersIcon } from './icons';
+import { SignOutIcon, UsersIcon } from './icons';
+import Logo from './Logo';
 import { useAuth } from '../auth/AuthContext';
 
 export default function Header() {
@@ -15,9 +16,7 @@ export default function Header() {
     <header className="no-print sticky top-0 z-20 border-b border-slate-200/70 bg-white/80 backdrop-blur">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-2 px-4 py-3 sm:px-6">
         <Link to="/" className="group flex items-center gap-3 rounded-lg">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-600 text-white shadow-sm shadow-teal-600/20 transition group-hover:scale-105">
-            <PillIcon className="h-5 w-5" weight="bold" />
-          </span>
+          <Logo className="h-9 w-9 rounded-xl shadow-e1 transition group-hover:scale-105" />
           <span className="flex flex-col leading-tight">
             <span className="text-base font-semibold tracking-tight text-slate-900">
               ClinicalPharmTools
