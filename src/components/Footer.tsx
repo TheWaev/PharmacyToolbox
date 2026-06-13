@@ -13,7 +13,7 @@ export default function Footer() {
             Runs in your browser — no information you enter is recorded
           </span>
           <span>
-            ClinicalPharmTools v{APP_VERSION} &middot; last updated {LAST_UPDATED}
+            Pharmacy Toolbox v{APP_VERSION} &middot; last updated {LAST_UPDATED}
           </span>
         </div>
       </div>

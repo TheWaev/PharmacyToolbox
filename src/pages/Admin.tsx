@@ -74,6 +74,46 @@ export default function Admin() {
 
   const pending = rows.filter((r) => !r.approved).length;
 
+  const statusBadge = (r: ProfileRow) =>
+    r.approved ? (
+      <span className="inline-flex items-center gap-1 text-teal-700">
+        <CheckIcon className="h-4 w-4" weight="fill" /> Approved
+      </span>
+    ) : (
+      <span className="font-medium text-amber-700">Pending</span>
+    );
+
+  const actionButton = (r: ProfileRow, fullWidth = false) =>
+    r.approved ? (
+      <button
+        type="button"
+        onClick={() => void setApproved(r.id, false)}
+        disabled={busyId === r.id}
+        className={`inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-red-50 hover:text-red-700 disabled:opacity-50 ${fullWidth ? 'w-full' : ''}`}
+      >
+        {busyId === r.id ? (
+          <SpinnerIcon className="h-4 w-4 animate-spin" />
+        ) : (
+          <RevokeIcon className="h-4 w-4" />
+        )}
+        Revoke
+      </button>
+    ) : (
+      <button
+        type="button"
+        onClick={() => void setApproved(r.id, true)}
+        disabled={busyId === r.id}
+        className={`inline-flex items-center justify-center gap-1.5 rounded-lg bg-teal-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 disabled:opacity-50 ${fullWidth ? 'w-full' : ''}`}
+      >
+        {busyId === r.id ? (
+          <SpinnerIcon className="h-4 w-4 animate-spin" weight="bold" />
+        ) : (
+          <CheckIcon className="h-4 w-4" weight="bold" />
+        )}
+        Approve
+      </button>
+    );
+
   return (
     <div>
       <div className="mb-5">
@@ -134,82 +174,82 @@ export default function Admin() {
         ) : rows.length === 0 ? (
           <p className="py-10 text-center text-sm text-slate-500">No accounts yet.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-400">
-                  <th scope="col" className="py-2 pr-3 font-medium">Email</th>
-                  <th scope="col" className="py-2 pr-3 font-medium">Practice</th>
-                  <th scope="col" className="py-2 pr-3 font-medium">PCN</th>
-                  <th scope="col" className="py-2 pr-3 font-medium">Status</th>
-                  <th scope="col" className="py-2 pr-3 font-medium">Joined</th>
-                  <th scope="col" className="py-2 font-medium">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr
-                    key={r.id}
-                    className={['border-b border-slate-100', r.approved ? '' : 'bg-amber-50/40'].join(' ')}
-                  >
-                    <td className="py-3 pr-3 font-medium text-slate-900">
-                      {r.email ?? '—'}
-                      {r.is_admin && (
-                        <span className="ml-2 rounded-full bg-teal-100 px-2 py-0.5 text-xs font-medium text-teal-700">
-                          admin
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-3 pr-3 text-slate-600">{r.practice || '—'}</td>
-                    <td className="py-3 pr-3 text-slate-500">{r.pcn || '—'}</td>
-                    <td className="py-3 pr-3">
-                      {r.approved ? (
-                        <span className="inline-flex items-center gap-1 text-teal-700">
-                          <CheckIcon className="h-4 w-4" weight="fill" /> Approved
-                        </span>
-                      ) : (
-                        <span className="text-amber-700">Pending</span>
-                      )}
-                    </td>
-                    <td className="py-3 pr-3 text-slate-500">
-                      {new Date(r.created_at).toLocaleDateString('en-GB')}
-                    </td>
-                    <td className="py-3">
-                      {r.approved ? (
-                        <button
-                          type="button"
-                          onClick={() => void setApproved(r.id, false)}
-                          disabled={busyId === r.id}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
-                        >
-                          {busyId === r.id ? (
-                            <SpinnerIcon className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <RevokeIcon className="h-4 w-4" />
-                          )}
-                          Revoke
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => void setApproved(r.id, true)}
-                          disabled={busyId === r.id}
-                          className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 disabled:opacity-50"
-                        >
-                          {busyId === r.id ? (
-                            <SpinnerIcon className="h-4 w-4 animate-spin" weight="bold" />
-                          ) : (
-                            <CheckIcon className="h-4 w-4" weight="bold" />
-                          )}
-                          Approve
-                        </button>
-                      )}
-                    </td>
+          <>
+            {/* Mobile (< sm): stacked cards, no horizontal scroll */}
+            <ul className="space-y-3 sm:hidden">
+              {rows.map((r) => (
+                <li
+                  key={r.id}
+                  className={[
+                    'rounded-xl border p-4',
+                    r.approved ? 'border-slate-200' : 'border-amber-200 bg-amber-50/40',
+                  ].join(' ')}
+                >
+                  <p className="break-all font-medium text-slate-900">
+                    {r.email ?? '—'}
+                    {r.is_admin && (
+                      <span className="ml-2 align-middle rounded-full bg-teal-100 px-2 py-0.5 text-xs font-medium text-teal-700">
+                        admin
+                      </span>
+                    )}
+                  </p>
+                  {(r.practice || r.pcn) && (
+                    <p className="mt-1 text-sm text-slate-500">
+                      {r.practice || '—'}
+                      {r.pcn ? ` · ${r.pcn}` : ''}
+                    </p>
+                  )}
+                  <p className="mt-1 text-xs text-slate-400">
+                    Joined {new Date(r.created_at).toLocaleDateString('en-GB')}
+                  </p>
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-slate-100 pt-3">
+                    <span className="text-sm">{statusBadge(r)}</span>
+                    {actionButton(r)}
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            {/* Tablet/desktop (≥ sm): table */}
+            <div className="hidden overflow-x-auto sm:block">
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-400">
+                    <th scope="col" className="py-2 pr-3 font-medium">Email</th>
+                    <th scope="col" className="py-2 pr-3 font-medium">Practice</th>
+                    <th scope="col" className="py-2 pr-3 font-medium">PCN</th>
+                    <th scope="col" className="py-2 pr-3 font-medium">Status</th>
+                    <th scope="col" className="py-2 pr-3 font-medium">Joined</th>
+                    <th scope="col" className="py-2 font-medium">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {rows.map((r) => (
+                    <tr
+                      key={r.id}
+                      className={['border-b border-slate-100', r.approved ? '' : 'bg-amber-50/40'].join(' ')}
+                    >
+                      <td className="py-3 pr-3 font-medium text-slate-900">
+                        {r.email ?? '—'}
+                        {r.is_admin && (
+                          <span className="ml-2 rounded-full bg-teal-100 px-2 py-0.5 text-xs font-medium text-teal-700">
+                            admin
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3 pr-3 text-slate-600">{r.practice || '—'}</td>
+                      <td className="py-3 pr-3 text-slate-500">{r.pcn || '—'}</td>
+                      <td className="py-3 pr-3">{statusBadge(r)}</td>
+                      <td className="py-3 pr-3 text-slate-500">
+                        {new Date(r.created_at).toLocaleDateString('en-GB')}
+                      </td>
+                      <td className="py-3">{actionButton(r)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </section>
     </div>

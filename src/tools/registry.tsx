@@ -135,7 +135,6 @@ export const tools: ToolDef[] = [
     summary:
       'Licensed dose and reduction criteria for apixaban, rivaroxaban, edoxaban and dabigatran in non-valvular AF.',
     status: 'available',
-    beta: true,
     icon: DropIcon,
     component: DoacChecker,
   },

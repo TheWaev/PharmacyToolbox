@@ -20,7 +20,7 @@ export default function AuthLayout({
             <PillIcon className="h-7 w-7" weight="bold" />
           </span>
           <h1 className="mt-3 text-lg font-semibold tracking-tight text-slate-900">
-            ClinicalPharmTools
+            Pharmacy Toolbox
           </h1>
         </div>
 

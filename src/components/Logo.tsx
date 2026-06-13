@@ -1,6 +1,6 @@
 /**
- * ClinicalPharmTools brand mark: a medicine bottle, a cog, and a scored tablet
- * — "clinical pharmacy tools". Line art in `currentColor` so it inherits the
+ * Pharmacy Toolbox brand mark: a medicine bottle, a cog, and a scored tablet
+ * — "pharmacy toolbox". Line art in `currentColor` so it inherits the
  * brand/ink colour. The cog is its own group so it can spin (see `.logo-cog`
  * in index.css; honours prefers-reduced-motion). Pass `animated={false}` for a
  * static instance.
@@ -8,7 +8,7 @@
 export default function Logo({
   className,
   animated = true,
-  title = 'ClinicalPharmTools',
+  title = 'Pharmacy Toolbox',
 }: {
   className?: string;
   animated?: boolean;

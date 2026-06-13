@@ -30,7 +30,7 @@ export default function Home() {
       {/* Page heading */}
       <div className="mb-6 flex flex-wrap items-start justify-between gap-x-4 gap-y-3 border-b border-slate-200/80 pb-5">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900">Clinical pharmacy tools</h1>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900">Pharmacy Toolbox</h1>
           <p className="mt-1 max-w-xl text-sm text-slate-600">
             A focused suite of calculators for clinical pharmacy teams — fast, accurate, and safe.
             <span className="ml-1.5 text-ink-subtle">· {availableCount} tools</span>

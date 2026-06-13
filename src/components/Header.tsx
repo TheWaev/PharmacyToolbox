@@ -19,7 +19,7 @@ export default function Header() {
           <Logo className="h-9 w-auto text-brand-600 transition group-hover:scale-105" />
           <span className="flex flex-col leading-tight">
             <span className="font-display text-base font-bold tracking-tight text-slate-900">
-              ClinicalPharmTools
+              Pharmacy Toolbox
             </span>
             <span className="hidden text-xs text-slate-500 sm:block">
               clinical pharmacy calculators
