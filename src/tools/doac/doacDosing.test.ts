@@ -109,3 +109,25 @@ describe('dabigatran (AF)', () => {
     expect(r.dose).toBeNull();
   });
 });
+
+describe('reduced-dose flag', () => {
+  it('flags reduced doses and not standard doses', () => {
+    // standard
+    expect(checkDoacDose({ ...base, drug: 'apixaban', age: 70, weightKg: 80, creatinineUmol: 90, crcl: 80 }).reduced).toBe(false);
+    expect(checkDoacDose({ ...base, drug: 'rivaroxaban', crcl: 60 }).reduced).toBe(false);
+    expect(checkDoacDose({ ...base, drug: 'edoxaban', weightKg: 80, crcl: 80 }).reduced).toBe(false);
+    expect(checkDoacDose({ ...base, drug: 'dabigatran', age: 65, crcl: 80 }).reduced).toBe(false);
+    // reduced
+    expect(checkDoacDose({ ...base, drug: 'apixaban', age: 85, weightKg: 55, creatinineUmol: 90, crcl: 70 }).reduced).toBe(true);
+    expect(checkDoacDose({ ...base, drug: 'apixaban', age: 70, weightKg: 80, creatinineUmol: 120, crcl: 20 }).reduced).toBe(true);
+    expect(checkDoacDose({ ...base, drug: 'rivaroxaban', crcl: 40 }).reduced).toBe(true);
+    expect(checkDoacDose({ ...base, drug: 'edoxaban', weightKg: 55, crcl: 80 }).reduced).toBe(true);
+    expect(checkDoacDose({ ...base, drug: 'dabigatran', age: 82, crcl: 80 }).reduced).toBe(true);
+  });
+
+  it('does not flag a contraindicated result as reduced', () => {
+    const r = checkDoacDose({ ...base, drug: 'dabigatran', age: 70, crcl: 25 });
+    expect(r.contraindicated).toBe(true);
+    expect(r.reduced).toBe(false);
+  });
+});

@@ -9,7 +9,7 @@ export function buildDoacSummary(r: DoacResult): string {
   if (r.contraindicated) {
     lines.push('Recommendation: NOT recommended / contraindicated.');
   } else {
-    lines.push(`Recommended dose: ${r.dose}`);
+    lines.push(`Recommended dose: ${r.dose}${r.reduced ? '  ** REDUCED DOSE **' : ' (standard dose)'}`);
   }
   for (const reason of r.rationale) lines.push(`  ${reason}`);
   if (r.warnings.length) {

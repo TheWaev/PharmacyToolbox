@@ -38,7 +38,8 @@ function numStr(value: number | null): string {
   return value == null ? '' : String(value);
 }
 function fmt(mg: number): string {
-  return Number(mg.toFixed(3)).toString();
+  // Round to 1 d.p., trimming trailing zeros (e.g. 1.125 → "1.1", 30 → "30").
+  return Number(mg.toFixed(1)).toString();
 }
 
 const REFERENCES: Reference[] = [

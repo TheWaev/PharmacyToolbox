@@ -378,14 +378,36 @@ export default function DoacChecker() {
 
             {result.ok ? (
               result.contraindicated ? (
-                <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-center">
-                  <p className="text-xs uppercase tracking-wide text-red-700">{result.drugLabel}</p>
+                <div className="rounded-xl border-2 border-red-300 bg-red-50 p-5 text-center">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-red-800 ring-1 ring-inset ring-red-300">
+                    <AlertIcon className="h-3.5 w-3.5" weight="fill" />
+                    Contraindicated
+                  </span>
+                  <p className="mt-2 text-xs uppercase tracking-wide text-red-700">{result.drugLabel}</p>
                   <p className="mt-1 text-xl font-bold text-red-800">Not recommended</p>
                   <p className="mt-1 text-sm text-red-700">{result.rationale[0]}</p>
                 </div>
+              ) : result.reduced ? (
+                <div className="rounded-xl border-2 border-amber-400 bg-amber-50 p-5 text-center">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-200/80 px-3 py-1 text-xs font-bold uppercase tracking-wide text-amber-900 ring-1 ring-inset ring-amber-400">
+                    <AlertIcon className="h-3.5 w-3.5" weight="fill" />
+                    Reduced dose
+                  </span>
+                  <p className="mt-2 text-xs uppercase tracking-wide text-amber-800">{result.drugLabel}</p>
+                  <p className="mt-1 text-3xl font-extrabold text-amber-900">{result.dose}</p>
+                  {result.rationale.map((reason) => (
+                    <p key={reason} className="mt-1 text-sm font-medium text-amber-800">
+                      {reason}
+                    </p>
+                  ))}
+                </div>
               ) : (
                 <div className="rounded-xl border border-teal-200 bg-teal-50 p-5 text-center">
-                  <p className="text-xs uppercase tracking-wide text-teal-700">{result.drugLabel}</p>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-teal-700 ring-1 ring-inset ring-teal-200">
+                    <CheckIcon className="h-3.5 w-3.5" weight="fill" />
+                    Standard dose
+                  </span>
+                  <p className="mt-2 text-xs uppercase tracking-wide text-teal-700">{result.drugLabel}</p>
                   <p className="mt-1 text-3xl font-extrabold text-teal-800">{result.dose}</p>
                   {result.rationale.map((reason) => (
                     <p key={reason} className="mt-1 text-sm text-teal-700/90">

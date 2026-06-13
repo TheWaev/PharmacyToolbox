@@ -22,7 +22,7 @@ const inputCls =
   'block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm transition focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/25';
 
 const REFERENCES: Reference[] = [
-  { label: 'BNF — Prescribing in palliative care (opioid equivalences).', href: 'https://bnf.nice.org.uk/medicines-guidance/prescribing-in-palliative-care/' },
+  { label: 'BNF — Prescribing in palliative care: opioid equivalence & transdermal patch tables (based on the Palliative Care Formulary, 9th ed).', href: 'https://bnf.nice.org.uk/medicines-guidance/prescribing-in-palliative-care/' },
   { label: 'Faculty of Pain Medicine — Opioids Aware: dose equivalents and changing opioids.', href: 'https://fpm.ac.uk/opioids-aware-structured-approach-opioid-prescribing/dose-equivalents-and-changing-opioids' },
   { label: 'Specialist Pharmacy Service — Switching between opioids.', href: 'https://www.sps.nhs.uk/articles/switching-between-morphine-and-other-opioids-in-palliative-care/' },
 ];
@@ -35,6 +35,7 @@ interface Row {
   dose: number | null;
 }
 const round = (n: number) => Math.round(n * 10) / 10;
+const fmtFactor = (n: number) => Number(n.toFixed(3)).toString();
 const toNum = (v: string) => (v.trim() === '' ? null : Number.isFinite(Number(v)) ? Number(v) : null);
 
 export default function OpioidConvert() {
@@ -169,6 +170,33 @@ export default function OpioidConvert() {
               {round(result.totalOme)}<span className="ml-1 text-sm font-medium">mg</span>
             </span>
           </div>
+
+          {/* Method — how the total was reached */}
+          {result.contributions.length > 0 && (
+            <div className="mt-4 rounded-xl bg-white/70 p-3 ring-1 ring-inset ring-black/5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                How this is calculated
+              </p>
+              <ul className="mt-2 space-y-1 text-sm text-slate-700">
+                {result.contributions.map((c) => (
+                  <li key={c.key} className="flex flex-wrap items-baseline justify-between gap-x-3">
+                    <span className="text-slate-600">{c.label}</span>
+                    <span className="tabular-nums">
+                      {round(c.dose)} {c.unit} × {fmtFactor(c.factor)} ={' '}
+                      <strong className="text-slate-900">{round(c.ome)} mg</strong>
+                    </span>
+                  </li>
+                ))}
+                <li className="mt-1 flex flex-wrap items-baseline justify-between gap-x-3 border-t border-slate-200 pt-1.5 font-semibold">
+                  <span className="text-slate-700">Total OME</span>
+                  <span className="tabular-nums text-slate-900">{round(result.totalOme)} mg / 24h</span>
+                </li>
+              </ul>
+              <p className="mt-2 text-xs text-slate-500">
+                Factor = mg of oral morphine per unit of each opioid&rsquo;s dose.
+              </p>
+            </div>
+          )}
         </section>
 
         {/* Convert to target */}
@@ -191,6 +219,11 @@ export default function OpioidConvert() {
               <p className="mt-1">
                 Suggested start after 25–50% reduction:{' '}
                 <strong>~{round(conversion.reducedLow)}–{round(conversion.reducedHigh)} {conversion.unit}</strong>, then titrate.
+              </p>
+              <p className="mt-2 border-t border-slate-200 pt-2 text-xs tabular-nums text-slate-500">
+                Method: {round(result.totalOme)} mg OME ÷ {fmtFactor(conversion.factor)} ={' '}
+                {round(conversion.equivalent)} {conversion.unit}; then × 0.5–0.75 (25–50% reduction) ={' '}
+                {round(conversion.reducedLow)}–{round(conversion.reducedHigh)} {conversion.unit}.
               </p>
               {targetLabel.note && (
                 <p className="mt-2 inline-flex items-start gap-1.5 text-xs text-amber-700">

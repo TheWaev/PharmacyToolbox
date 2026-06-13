@@ -6,8 +6,8 @@ import {
 } from './steroidEquiv';
 
 function fmt(mg: number): string {
-  // up to 3 significant-ish places, trimming trailing zeros
-  return Number(mg.toFixed(3)).toString();
+  // Round to 1 d.p., trimming trailing zeros (e.g. 1.125 → "1.1", 30 → "30").
+  return Number(mg.toFixed(1)).toString();
 }
 
 export function buildSteroidSummary(fromKey: SteroidKey, dose: number | null, r: SteroidResult): string {

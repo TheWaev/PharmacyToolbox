@@ -79,7 +79,6 @@ export const tools: ToolDef[] = [
     summary:
       'Estimate creatinine clearance (Cockcroft–Gault) for renal dose adjustment, with actual / ideal / adjusted body weight.',
     status: 'available',
-    beta: true,
     icon: HeartPulseIcon,
     component: CrCl,
   },
@@ -91,7 +90,6 @@ export const tools: ToolDef[] = [
     summary:
       'Check eligibility for NHS tirzepatide (Mounjaro) weight management against the South East London pathway.',
     status: 'available',
-    beta: true,
     icon: ScalesIcon,
     component: WeightMgmt,
   },
@@ -103,7 +101,6 @@ export const tools: ToolDef[] = [
     summary:
       'CHA₂DS₂-VASc stroke risk and ORBIT bleeding risk (NICE NG196) to support anticoagulation decisions.',
     status: 'available',
-    beta: true,
     icon: PulseIcon,
     component: AfRisk,
   },
@@ -115,7 +112,6 @@ export const tools: ToolDef[] = [
     summary:
       'Total a patient’s anticholinergic cognitive burden from their medicines (ACB scale); flags a score ≥3.',
     status: 'available',
-    beta: true,
     icon: BrainIcon,
     component: AcbCalc,
   },
@@ -151,7 +147,6 @@ export const tools: ToolDef[] = [
     summary:
       'Classify CKD by eGFR and ACR on the KDIGO heat-map and check NICE NG203 nephrology referral criteria.',
     status: 'available',
-    beta: true,
     icon: FunnelIcon,
     component: CkdClassifier,
   },

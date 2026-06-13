@@ -42,6 +42,8 @@ export interface DoacResult {
   /** Recommended dose, e.g. "5 mg twice daily". Null when contraindicated/not assessable. */
   dose: string | null;
   contraindicated: boolean;
+  /** True when the recommended dose is a reduced (non-standard) dose. */
+  reduced: boolean;
   rationale: string[];
   warnings: string[];
 }
@@ -78,6 +80,7 @@ function apixaban(input: DoacInput): Omit<DoacResult, 'ok' | 'errors' | 'drugLab
     return {
       dose: null,
       contraindicated: true,
+      reduced: false,
       rationale: ['CrCl < 15 mL/min or dialysis — not recommended (insufficient data).'],
       warnings,
     };
@@ -94,6 +97,7 @@ function apixaban(input: DoacInput): Omit<DoacResult, 'ok' | 'errors' | 'drugLab
     return {
       dose: '2.5 mg twice daily',
       contraindicated: false,
+      reduced: true,
       rationale: ['Severe renal impairment (CrCl 15–29 mL/min) → reduced dose.'],
       warnings,
     };
@@ -103,6 +107,7 @@ function apixaban(input: DoacInput): Omit<DoacResult, 'ok' | 'errors' | 'drugLab
     return {
       dose: '2.5 mg twice daily',
       contraindicated: false,
+      reduced: true,
       rationale: [`≥2 reduction criteria met (${criteria.join(', ')}) → reduced dose.`],
       warnings,
     };
@@ -113,7 +118,7 @@ function apixaban(input: DoacInput): Omit<DoacResult, 'ok' | 'errors' | 'drugLab
       ? `Only 1 reduction criterion met (${criteria[0]}) — standard dose.`
       : 'No reduction criteria met — standard dose.',
   );
-  return { dose: '5 mg twice daily', contraindicated: false, rationale, warnings };
+  return { dose: '5 mg twice daily', contraindicated: false, reduced: false, rationale, warnings };
 }
 
 function rivaroxaban(input: DoacInput): Omit<DoacResult, 'ok' | 'errors' | 'drugLabel'> {
@@ -122,6 +127,7 @@ function rivaroxaban(input: DoacInput): Omit<DoacResult, 'ok' | 'errors' | 'drug
     return {
       dose: null,
       contraindicated: true,
+      reduced: false,
       rationale: ['CrCl < 15 mL/min — not recommended.'],
       warnings: [],
     };
@@ -130,6 +136,7 @@ function rivaroxaban(input: DoacInput): Omit<DoacResult, 'ok' | 'errors' | 'drug
     return {
       dose: '15 mg once daily (with food)',
       contraindicated: false,
+      reduced: true,
       rationale: ['CrCl 15–49 mL/min → reduced dose.'],
       warnings: [],
     };
@@ -137,6 +144,7 @@ function rivaroxaban(input: DoacInput): Omit<DoacResult, 'ok' | 'errors' | 'drug
   return {
     dose: '20 mg once daily (with food)',
     contraindicated: false,
+    reduced: false,
     rationale: ['CrCl ≥ 50 mL/min → standard dose.'],
     warnings: ['Take with food to maximise absorption.'],
   };
@@ -149,6 +157,7 @@ function edoxaban(input: DoacInput): Omit<DoacResult, 'ok' | 'errors' | 'drugLab
     return {
       dose: null,
       contraindicated: true,
+      reduced: false,
       rationale: ['CrCl < 15 mL/min — not recommended.'],
       warnings,
     };
@@ -167,6 +176,7 @@ function edoxaban(input: DoacInput): Omit<DoacResult, 'ok' | 'errors' | 'drugLab
     return {
       dose: '30 mg once daily',
       contraindicated: false,
+      reduced: true,
       rationale: [`Reduction criterion met (${reasons.join(', ')}) → reduced dose.`],
       warnings,
     };
@@ -174,6 +184,7 @@ function edoxaban(input: DoacInput): Omit<DoacResult, 'ok' | 'errors' | 'drugLab
   return {
     dose: '60 mg once daily',
     contraindicated: false,
+    reduced: false,
     rationale: ['No reduction criteria met → standard dose.'],
     warnings,
   };
@@ -186,6 +197,7 @@ function dabigatran(input: DoacInput): Omit<DoacResult, 'ok' | 'errors' | 'drugL
     return {
       dose: null,
       contraindicated: true,
+      reduced: false,
       rationale: ['CrCl < 30 mL/min — contraindicated.'],
       warnings,
     };
@@ -210,6 +222,7 @@ function dabigatran(input: DoacInput): Omit<DoacResult, 'ok' | 'errors' | 'drugL
     return {
       dose: '110 mg twice daily',
       contraindicated: false,
+      reduced: true,
       rationale: [`Reduced dose indicated (${reduce.join(', ')}).`],
       warnings,
     };
@@ -217,6 +230,7 @@ function dabigatran(input: DoacInput): Omit<DoacResult, 'ok' | 'errors' | 'drugL
   return {
     dose: '150 mg twice daily',
     contraindicated: false,
+    reduced: false,
     rationale: ['Standard dose (no mandatory reduction criteria).'],
     warnings,
   };
@@ -232,6 +246,7 @@ export function checkDoacDose(input: DoacInput): DoacResult {
       drugLabel,
       dose: null,
       contraindicated: false,
+      reduced: false,
       rationale: [],
       warnings: [],
     };
