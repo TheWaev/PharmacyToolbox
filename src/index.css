@@ -12,14 +12,23 @@
   src: url('/fonts/inter-latin-variable.woff2') format('woff2');
 }
 
-/* Syne (variable, latin) — the display face. Used for the wordmark, page and
-   section headings and tool titles; Inter remains the text/UI/number face. */
+/* Atkinson Hyperlegible Next (variable, latin) — the body / UI / number face,
+   engineered for maximum legibility (distinct 0/O, 1/l/I). Self-hosted. */
 @font-face {
-  font-family: 'Syne';
+  font-family: 'Atkinson Hyperlegible Next';
   font-style: normal;
-  font-weight: 400 800;
+  font-weight: 200 800;
   font-display: swap;
-  src: url('/fonts/syne-latin-variable.woff2') format('woff2');
+  src: url('/fonts/atkinson-hyperlegible-next-latin-variable.woff2') format('woff2');
+}
+
+/* Bricolage Grotesque (variable, latin) — the display / title face. */
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('/fonts/bricolage-grotesque-latin-variable.woff2') format('woff2');
 }
 
 /* =========================================================================

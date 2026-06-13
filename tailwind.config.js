@@ -55,10 +55,10 @@ export default {
         info: withAlpha('--info'),
       },
       fontFamily: {
-        // Syne is the primary face app-wide (Bold for headings, Normal for
-        // body); Inter stays bundled as the fallback / numeric face.
+        // Atkinson Hyperlegible Next is the body / UI / number face
+        // (legibility-first); Bricolage Grotesque is the display / title face.
         sans: [
-          'Syne',
+          'Atkinson Hyperlegible Next',
           'Inter',
           'ui-sans-serif',
           'system-ui',
@@ -69,16 +69,17 @@ export default {
           'Arial',
           'sans-serif',
         ],
-        // Explicit display alias (same as sans) for headings / wordmark.
+        // Display / title face for headings, the wordmark and tool titles.
         display: [
-          'Syne',
-          'Inter',
+          'Bricolage Grotesque',
+          'Atkinson Hyperlegible Next',
           'ui-sans-serif',
           'system-ui',
           'sans-serif',
         ],
-        // Inter-first stack for dense numeric output that needs tabular figures.
+        // Legible-numeral stack for dense numeric output.
         num: [
+          'Atkinson Hyperlegible Next',
           'Inter',
           'ui-sans-serif',
           'system-ui',
@@ -100,11 +101,11 @@ export default {
       transitionTimingFunction: {
         brand: 'cubic-bezier(0.2, 0.6, 0.2, 1)',
       },
-      // Syne is a wide, geometric display face, so headings get a tighter
-      // default than Tailwind's -0.025em to stop them looking stretched.
+      // Mild heading tightening that suits Bricolage Grotesque without
+      // squashing the letters.
       letterSpacing: {
-        tight: '-0.04em',
-        tighter: '-0.055em',
+        tight: '-0.02em',
+        tighter: '-0.035em',
       },
     },
   },
