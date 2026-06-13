@@ -8,6 +8,21 @@ export default {
       // Token-driven colours (added alongside Tailwind defaults so existing
       // slate/teal utilities keep working while components migrate to tokens).
       colors: {
+        // The app's components currently use `teal-*` utilities directly, so we
+        // remap the teal scale to forest green to rebrand everything at once
+        // (until components migrate to the brand-* tokens in stage B).
+        teal: {
+          50: '#f0f6f2',
+          100: '#daece0',
+          200: '#b5d7c0',
+          300: '#84bc99',
+          400: '#4f9a6e',
+          500: '#2d7c54',
+          600: '#1f6543',
+          700: '#195237',
+          800: '#16402d',
+          900: '#113023',
+        },
         brand: {
           50: withAlpha('--brand-50'),
           100: withAlpha('--brand-100'),
@@ -40,7 +55,10 @@ export default {
         info: withAlpha('--info'),
       },
       fontFamily: {
+        // Syne is the primary face app-wide (Bold for headings, Normal for
+        // body); Inter stays bundled as the fallback / numeric face.
         sans: [
+          'Syne',
           'Inter',
           'ui-sans-serif',
           'system-ui',
@@ -49,6 +67,21 @@ export default {
           'Roboto',
           'Helvetica Neue',
           'Arial',
+          'sans-serif',
+        ],
+        // Explicit display alias (same as sans) for headings / wordmark.
+        display: [
+          'Syne',
+          'Inter',
+          'ui-sans-serif',
+          'system-ui',
+          'sans-serif',
+        ],
+        // Inter-first stack for dense numeric output that needs tabular figures.
+        num: [
+          'Inter',
+          'ui-sans-serif',
+          'system-ui',
           'sans-serif',
         ],
       },

@@ -18,7 +18,7 @@ export default function Header() {
         <Link to="/" className="group flex items-center gap-3 rounded-lg">
           <Logo className="h-9 w-auto text-brand-600 transition group-hover:scale-105" />
           <span className="flex flex-col leading-tight">
-            <span className="text-base font-semibold tracking-tight text-slate-900">
+            <span className="font-display text-base font-bold tracking-tight text-slate-900">
               ClinicalPharmTools
             </span>
             <span className="hidden text-xs text-slate-500 sm:block">

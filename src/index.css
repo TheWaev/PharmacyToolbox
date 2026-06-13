@@ -12,6 +12,16 @@
   src: url('/fonts/inter-latin-variable.woff2') format('woff2');
 }
 
+/* Syne (variable, latin) — the display face. Used for the wordmark, page and
+   section headings and tool titles; Inter remains the text/UI/number face. */
+@font-face {
+  font-family: 'Syne';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/syne-latin-variable.woff2') format('woff2');
+}
+
 /* =========================================================================
    Design tokens — single source of truth. Colours are stored as "R G B"
    channels so Tailwind can apply opacity via rgb(var(--token) / <alpha>).
@@ -21,17 +31,17 @@
    block is all that's needed later.
    ========================================================================= */
 :root {
-  /* Brand — teal */
-  --brand-50: 240 253 250;
-  --brand-100: 204 251 241;
-  --brand-200: 153 246 228;
-  --brand-300: 94 234 212;
-  --brand-400: 45 212 191;
-  --brand-500: 20 184 166;
-  --brand-600: 13 148 136;
-  --brand-700: 15 118 110;
-  --brand-800: 17 94 89;
-  --brand-900: 19 78 74;
+  /* Brand — forest green */
+  --brand-50: 240 246 242;
+  --brand-100: 218 236 224;
+  --brand-200: 181 215 192;
+  --brand-300: 132 188 153;
+  --brand-400: 79 154 110;
+  --brand-500: 45 124 84;
+  --brand-600: 31 101 67;
+  --brand-700: 25 82 55;
+  --brand-800: 22 64 45;
+  --brand-900: 17 48 35;
 
   /* Neutrals — warm grey (stone) */
   --n-50: 250 250 249;
@@ -55,7 +65,7 @@
   --danger: 185 28 28;
   --danger-bg: 254 242 242;
   --danger-border: 254 202 202;
-  --info: 13 148 136;
+  --info: 31 101 67;
 
   /* Surfaces / text (light theme) */
   --bg: 250 250 249; /* page canvas — faint warm near-white */
@@ -66,7 +76,7 @@
   --ink: 28 25 23; /* body text — warm near-black */
   --ink-muted: 87 83 78;
   --ink-subtle: 120 113 108;
-  --ring: 13 148 136; /* focus ring — brand */
+  --ring: 31 101 67; /* focus ring — brand */
 
   /* Radii */
   --r-sm: 0.5rem; /* 8px */
@@ -120,6 +130,34 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Pegboard texture (workshop motif) — faint ring-holes drawn on a backing
+   layer so it sits behind the content and fades out towards the left/right
+   edges without dimming the tiles on top of it. */
+.pegboard {
+  position: relative;
+}
+.pegboard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle at center,
+    transparent 0 1.7px,
+    rgb(var(--ink) / 0.09) 1.7px 2.6px,
+    transparent 2.6px
+  );
+  background-size: 22px 22px;
+  background-position: center;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+}
+.pegboard > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Logo cog: a gentle continuous rotation about its own centre; speeds up when
