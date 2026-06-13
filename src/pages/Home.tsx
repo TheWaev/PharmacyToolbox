@@ -48,7 +48,7 @@ export default function Home() {
           {grouped.map(({ category, items }) => (
             <section key={category}>
               <div className="mb-3 flex items-center justify-between gap-2.5">
-                <h2 className="inline-flex items-center rounded-md border border-slate-300/80 bg-white px-2.5 py-1 font-display text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-muted shadow-e1">
+                <h2 className="inline-flex items-center rounded-md border border-slate-300/80 bg-white px-2.5 py-1 font-display text-[11px] font-semibold uppercase tracking-[0.07em] text-ink-muted shadow-e1">
                   {category}
                 </h2>
                 <span className="inline-flex items-center rounded-full border border-slate-200/80 bg-white/90 px-2 py-0.5 text-[10px] font-medium tabular-nums text-ink-subtle shadow-e1">
@@ -87,7 +87,7 @@ function ToolTile({ tool }: { tool: ToolDef }) {
         <Icon className="h-5 w-5" weight="duotone" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate font-display text-[15px] font-semibold leading-tight text-slate-900">{tool.name}</span>
+        <span className="block truncate font-display text-[15px] font-semibold leading-tight tracking-tight text-slate-900">{tool.name}</span>
         <span className="mt-0.5 block truncate text-xs text-slate-500">{tool.tagline ?? tool.summary}</span>
       </span>
       <span className="flex shrink-0 items-center gap-2 self-center">

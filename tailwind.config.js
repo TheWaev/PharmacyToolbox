@@ -100,6 +100,12 @@ export default {
       transitionTimingFunction: {
         brand: 'cubic-bezier(0.2, 0.6, 0.2, 1)',
       },
+      // Syne is a wide, geometric display face, so headings get a tighter
+      // default than Tailwind's -0.025em to stop them looking stretched.
+      letterSpacing: {
+        tight: '-0.04em',
+        tighter: '-0.055em',
+      },
     },
   },
   plugins: [],
