@@ -20,7 +20,12 @@ export function buildQrisk3Summary(input: Qrisk3Input, r: Qrisk3Result): string 
       `BMI: ${r.bmi.toFixed(1)} kg/m²${clamped ? ` (outside 20–40 — model used ${r.bmiUsed!.toFixed(0)})` : ''}`,
     );
   }
-  if (input.cholRatio != null) lines.push(`Total:HDL cholesterol ratio: ${input.cholRatio.toFixed(1)}`);
+  if (input.cholRatio != null) {
+    const clamped = r.cholRatioUsed != null && Math.abs(r.cholRatioUsed - input.cholRatio) > 0.05;
+    lines.push(
+      `Total:HDL cholesterol ratio: ${input.cholRatio.toFixed(1)}${clamped ? ` (outside 1–11 — model used ${r.cholRatioUsed!.toFixed(0)})` : ''}`,
+    );
+  }
   lines.push('');
   lines.push(
     r.statinThresholdMet

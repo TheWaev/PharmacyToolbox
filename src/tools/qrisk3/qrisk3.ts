@@ -314,14 +314,20 @@ export interface Qrisk3Result {
   /** BMI used by the model: the actual value clamped to QRISK3's valid 20–40
    *  range, or the population mean when height/weight were left blank. */
   bmiUsed: number | null;
+  /** Total:HDL cholesterol ratio used by the model — the supplied value clamped
+   *  to QRISK3's valid 1–11 range, or the population mean when left blank. */
+  cholRatioUsed: number | null;
   /** NICE NG238: ≥10% → consider a statin (atorvastatin 20 mg). */
   statinThresholdMet: boolean | null;
 }
 
-/** qrisk.org's valid BMI range — values outside it are substituted with the
- *  boundary before the model runs (e.g. a BMI of 18.2 is calculated with 20). */
+/** qrisk.org's valid input ranges — values outside them are substituted with
+ *  the boundary before the model runs (e.g. a BMI of 18.2 is calculated with
+ *  20, a cholesterol ratio of 15 with 11). */
 const BMI_MIN = 20;
 const BMI_MAX = 40;
+const CHOL_RATIO_MIN = 1;
+const CHOL_RATIO_MAX = 11;
 
 function b(v: boolean): number {
   return v ? 1 : 0;
@@ -342,6 +348,9 @@ function buildRaw(input: Qrisk3Input): RawInput {
   // Match qrisk.org: clamp a supplied BMI to the model's valid 20–40 range; a
   // blank BMI falls back to the population mean (no substitution).
   const bmiModel = bmiDerived != null ? clamp(bmiDerived, BMI_MIN, BMI_MAX) : m.bmi;
+  // Likewise the cholesterol ratio is clamped to qrisk.org's 1–11 range.
+  const ratiModel =
+    input.cholRatio != null ? clamp(input.cholRatio, CHOL_RATIO_MIN, CHOL_RATIO_MAX) : m.rati;
   return {
     age: input.age as number,
     b_AF: b(input.af),
@@ -359,7 +368,7 @@ function buildRaw(input: Qrisk3Input): RawInput {
     bmi: bmiModel,
     ethrisk: input.ethnicity,
     fh_cvd: b(input.familyHistoryCvd),
-    rati: input.cholRatio ?? m.rati,
+    rati: ratiModel,
     sbp: input.sbp ?? m.sbp,
     // QRISK3 treats a blank SBP standard deviation as 0 (no measured
     // variability) — NOT the population mean. Matches the official calculator.
@@ -384,7 +393,7 @@ export function qrisk3(input: Qrisk3Input): Qrisk3Result {
   if (!input.ethnicity) errors.push('Select an ethnicity.');
 
   if (errors.length > 0) {
-    return { ok: false, errors, score: null, bmi: null, bmiUsed: null, statinThresholdMet: null };
+    return { ok: false, errors, score: null, bmi: null, bmiUsed: null, cholRatioUsed: null, statinThresholdMet: null };
   }
 
   const raw = buildRaw(input);
@@ -396,6 +405,7 @@ export function qrisk3(input: Qrisk3Input): Qrisk3Result {
     score,
     bmi: deriveBmi(input),
     bmiUsed: raw.bmi,
+    cholRatioUsed: raw.rati,
     statinThresholdMet: score >= 10,
   };
 }

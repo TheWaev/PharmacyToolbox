@@ -267,6 +267,12 @@ export default function Qrisk3() {
                 {result.bmiUsed.toFixed(0)} kg/m² is used in the calculation (matches qrisk.org).
               </p>
             )}
+            {cholRatio != null && result.cholRatioUsed != null && Math.abs(result.cholRatioUsed - cholRatio) > 0.05 && (
+              <p className="mt-2 text-xs text-amber-700">
+                Cholesterol ratio {cholRatio.toFixed(1)} is outside QRISK3’s 1–11 range — a value of{' '}
+                {result.cholRatioUsed.toFixed(0)} is used in the calculation (matches qrisk.org).
+              </p>
+            )}
           </section>
 
           <section className={`no-print ${card}`}>

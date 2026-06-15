@@ -163,6 +163,16 @@ describe('qrisk3 public wrapper', () => {
     expect(low.score).toBe(at20.score);
   });
 
+  it('clamps the cholesterol ratio to QRISK3’s 1–11 range (matches qrisk.org)', () => {
+    const high = qrisk3({ ...baseInput, cholRatio: 15 });
+    expect(high.cholRatioUsed).toBe(11);
+    const at11 = qrisk3({ ...baseInput, cholRatio: 11 });
+    expect(high.score).toBe(at11.score);
+
+    const low = qrisk3({ ...baseInput, cholRatio: 0.5 });
+    expect(low.cholRatioUsed).toBe(1);
+  });
+
   it('reproduces a real qrisk.org case with an out-of-range BMI (no postcode)', () => {
     // Male 67, White, non-smoker, 189 cm / 65 kg (BMI 18.2 → substituted 20),
     // chol ratio 1.9, SBP 140, SBP-SD blank, AF, no deprivation → qrisk.org = 18.1%.
