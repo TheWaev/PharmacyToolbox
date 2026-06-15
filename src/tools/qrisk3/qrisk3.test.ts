@@ -153,6 +153,36 @@ describe('qrisk3 public wrapper', () => {
     expect(blank.score).toBe(zero.score);
   });
 
+  it('clamps BMI to QRISK3’s 20–40 range (matches qrisk.org substitution)', () => {
+    // 189 cm / 65 kg → BMI 18.2, below the model's 20 floor.
+    const low = qrisk3({ ...baseInput, heightCm: 189, weightKg: 65 });
+    expect(low.bmi).toBeCloseTo(18.2, 1); // actual BMI is reported unchanged
+    expect(low.bmiUsed).toBe(20); // but 20 is fed to the model
+    // Identical case whose true BMI is already 20 must score the same.
+    const at20 = qrisk3({ ...baseInput, heightCm: 200, weightKg: 80 });
+    expect(low.score).toBe(at20.score);
+  });
+
+  it('reproduces a real qrisk.org case with an out-of-range BMI (no postcode)', () => {
+    // Male 67, White, non-smoker, 189 cm / 65 kg (BMI 18.2 → substituted 20),
+    // chol ratio 1.9, SBP 140, SBP-SD blank, AF, no deprivation → qrisk.org = 18.1%.
+    const r = qrisk3({
+      ...baseInput,
+      sex: 'male',
+      age: 67,
+      ethnicity: 1,
+      smoking: 0,
+      heightCm: 189,
+      weightKg: 65,
+      cholRatio: 1.9,
+      sbp: 140,
+      sbpSd: null,
+      townsend: null,
+      af: true,
+    });
+    expect(r.score).toBe(18.1);
+  });
+
   it('reproduces a real qrisk.org case (no postcode)', () => {
     // Female 56, White, light smoker, 166 cm / 84 kg, chol ratio 1.9, SBP 140,
     // SBP-SD blank, AF + treated hypertension, no deprivation → qrisk.org = 17.8%,

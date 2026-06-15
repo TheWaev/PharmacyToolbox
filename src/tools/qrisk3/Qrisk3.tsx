@@ -32,6 +32,10 @@ const checkboxRow =
   'flex items-start gap-2.5 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700';
 const checkboxCls =
   'mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 accent-teal-600 focus:ring-teal-500/30';
+const segTab = (active: boolean) =>
+  `rounded-md px-2.5 py-1 text-xs font-medium transition ${
+    active ? 'bg-white text-teal-700 shadow-sm ring-1 ring-slate-200' : 'text-slate-500 hover:text-slate-700'
+  }`;
 
 function toNum(v: string): number | null {
   if (v.trim() === '') return null;
@@ -96,8 +100,10 @@ export default function Qrisk3() {
   const [smoking, setSmoking] = useState<number>(0);
   const [heightCm, setHeight] = useState<number | null>(null);
   const [weightKg, setWeight] = useState<number | null>(null);
+  const [cholMode, setCholMode] = useState<'components' | 'ratio'>('components');
   const [totalChol, setTotalChol] = useState<number | null>(null);
   const [hdl, setHdl] = useState<number | null>(null);
+  const [cholRatioInput, setCholRatioInput] = useState<number | null>(null);
   const [sbp, setSbp] = useState<number | null>(null);
   const [sbpSd, setSbpSd] = useState<number | null>(null);
   const [postcode, setPostcode] = useState('');
@@ -109,7 +115,12 @@ export default function Qrisk3() {
   });
   const [copied, setCopied] = useState(false);
 
-  const cholRatio = totalChol && hdl && hdl > 0 ? totalChol / hdl : null;
+  const cholRatio =
+    cholMode === 'ratio'
+      ? cholRatioInput
+      : totalChol && hdl && hdl > 0
+        ? totalChol / hdl
+        : null;
   const townsendLookup = useMemo(
     () => (postcode.trim() ? lookupTownsend(postcode) : { townsend: null, sector: null, matched: false }),
     [postcode],
@@ -198,8 +209,27 @@ export default function Qrisk3() {
             <div className="grid gap-5 sm:grid-cols-2">
               <Num id="q-height" label="Height (cm)" value={heightCm} onChange={setHeight} />
               <Num id="q-weight" label="Weight (kg)" value={weightKg} onChange={setWeight} />
-              <Num id="q-tc" label="Total cholesterol (mmol/L)" value={totalChol} onChange={setTotalChol} />
-              <Num id="q-hdl" label="HDL cholesterol (mmol/L)" value={hdl} onChange={setHdl} />
+
+              <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-2">
+                <span className={fieldLabel}>Cholesterol</span>
+                <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5" role="group" aria-label="Cholesterol entry mode">
+                  <button type="button" onClick={() => setCholMode('components')} aria-pressed={cholMode === 'components'} className={segTab(cholMode === 'components')}>
+                    Total + HDL
+                  </button>
+                  <button type="button" onClick={() => setCholMode('ratio')} aria-pressed={cholMode === 'ratio'} className={segTab(cholMode === 'ratio')}>
+                    Ratio
+                  </button>
+                </div>
+              </div>
+              {cholMode === 'components' ? (
+                <>
+                  <Num id="q-tc" label="Total cholesterol (mmol/L)" value={totalChol} onChange={setTotalChol} />
+                  <Num id="q-hdl" label="HDL cholesterol (mmol/L)" value={hdl} onChange={setHdl} />
+                </>
+              ) : (
+                <Num id="q-ratio" label="Total : HDL cholesterol ratio" value={cholRatioInput} onChange={setCholRatioInput} />
+              )}
+
               <Num id="q-sbp" label="Systolic BP (mmHg)" value={sbp} onChange={setSbp} />
               <Num id="q-sbpsd" label="SD of systolic BP" value={sbpSd} onChange={setSbpSd} optional />
               <div className="sm:col-span-2">
@@ -221,16 +251,22 @@ export default function Qrisk3() {
                 </p>
               </div>
             </div>
-            {(result.bmiUsed != null && heightCm && weightKg) || cholRatio != null ? (
+            {result.bmi != null || cholRatio != null ? (
               <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-500">
-                {heightCm && weightKg && (
-                  <span className="rounded-full bg-slate-100 px-2.5 py-1">BMI {(weightKg / (heightCm / 100) ** 2).toFixed(1)}</span>
+                {result.bmi != null && (
+                  <span className="rounded-full bg-slate-100 px-2.5 py-1">BMI {result.bmi.toFixed(1)}</span>
                 )}
                 {cholRatio != null && (
                   <span className="rounded-full bg-slate-100 px-2.5 py-1">Chol:HDL ratio {cholRatio.toFixed(1)}</span>
                 )}
               </div>
             ) : null}
+            {result.bmi != null && result.bmiUsed != null && Math.abs(result.bmiUsed - result.bmi) > 0.05 && (
+              <p className="mt-2 text-xs text-amber-700">
+                BMI {result.bmi.toFixed(1)} is outside QRISK3’s 20–40 range — a value of{' '}
+                {result.bmiUsed.toFixed(0)} kg/m² is used in the calculation (matches qrisk.org).
+              </p>
+            )}
           </section>
 
           <section className={`no-print ${card}`}>

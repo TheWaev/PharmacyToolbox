@@ -14,7 +14,13 @@ export function buildQrisk3Summary(input: Qrisk3Input, r: Qrisk3Result): string 
   lines.push('');
   lines.push(`Sex: ${input.sex} · Age: ${input.age} · Ethnicity: ${label(ETHNICITIES, input.ethnicity)}`);
   lines.push(`Smoking: ${label(SMOKING, input.smoking)}`);
-  if (r.bmiUsed != null) lines.push(`BMI: ${r.bmiUsed.toFixed(1)} kg/m²`);
+  if (r.bmi != null) {
+    const clamped = r.bmiUsed != null && Math.abs(r.bmiUsed - r.bmi) > 0.05;
+    lines.push(
+      `BMI: ${r.bmi.toFixed(1)} kg/m²${clamped ? ` (outside 20–40 — model used ${r.bmiUsed!.toFixed(0)})` : ''}`,
+    );
+  }
+  if (input.cholRatio != null) lines.push(`Total:HDL cholesterol ratio: ${input.cholRatio.toFixed(1)}`);
   lines.push('');
   lines.push(
     r.statinThresholdMet
